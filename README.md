@@ -35,3 +35,12 @@ SEVEN_ZERO_SERVICE=(CEMS-SERVICE-MONITOR
 SEVEN_ZERO_TOMCAT=(CEMS-C-TCP
 		   CEMSUP)
 
+Script 68_INSTALL.sh 69_INSTALL.sh 70_INSTALL.sh are use for edit CEMS config file;
+
+# CONFIG_FILE='config.properties'
+# FASTDFS_FILE='fastdfs.properties'
+# JDBC_FILE='jdbc.properties'
+# POLICY_FILE='policy.xml'
+# REDIS_FILE='redis.properties'
+# FTP_FILE='ftp.properties'
+# 
