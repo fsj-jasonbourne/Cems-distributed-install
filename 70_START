@@ -1,7 +1,23 @@
 #!/bin/bash
 #服务业务发送对端口为129
-#接收回复成功的端口为1992
 #接收服务成功标示：success
+#1服务器A->CEMS-SERVIC-MONITOR
+#1服务器B->CEMS-SERVIC-MONITOR
+#1服务器C->CEMS-SERVIC-MONITOR
+#1服务器C--->SEND"70MONITOR-FINISHED"MESSAGE--->服务器B
+
+#2服务器B->CEMS-SERVICE-CONFIGURE
+#3服务器B->CEMS-SERVICE-ADDRESS
+#3服务器B--->SEND"CONFIGURE-ADDRESS-FINISHED"MESSAGE--->服务器A
+
+#4服务器A->CEMS-SERVICE-TOAUTH
+#5服务器A->CEMS-SERVICE-CEMS
+#5服务器A--->SEND"ALL-FINISHED"MESSAGE--->服务器B
+#5服务器A--->SEND"ALL-FINISHED"MESSAGE--->服务器C
+#5服务器A->其余服务
+
+#6服务器B->其余服务
+#7服务器C->其余服务
 
 IP_A="192.168.134.68"
 IP_B="192.168.134.69"
@@ -36,28 +52,24 @@ function Receive_Judge()
 
 function Service_Install()
 {
-#       cd ${PATH}CEMS-SERVICE-MONITOR/bin/
-#       ./install.sh
-
+        cd ${PATH}CEMS-SERVICE-MONITOR/bin/
+       ./install.sh
         echo "CEMS-SERVICE-MONITOR started..."
 
         # send install finished to IP_B 
-	
         Send_Service_One
 
 	echo "【开始监听129端口,等待服务器A安装完成】"
 	Receive_Service
-
-	echo "【开始监听129端口,等待服务器A安装完成】"
-	echo "【其余服务安装开始,顺序随意】"
 	if [[ ${RECEIVE_SERVICE} == "ALL-FINISHED" ]]
         then
         {
+		echo "【其余服务安装开始,顺序随意】"
                 for service in  ${SERVICE_OTHER[@]}
                 do
                 {
-                        #cd ${PATH}${service}/bin/
-                        #./install.sh
+                        cd ${PATH}${service}/bin/
+                        ./install.sh
                          echo "${service} install finished Ok!"
 			/bin/sleep 1
                 }
@@ -65,8 +77,8 @@ function Service_Install()
                 for tomcat in ${TOMCAT_OTHER[@]}
                 do
                 {
-                        #cd ${PATH}${service}/bin/
-                        #./startup.sh
+                        cd ${PATH}${service}/bin/
+                        /startup.sh
                         echo "${tomcat} started finished OK !"
 			/bin/sleep 1
                 }

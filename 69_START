@@ -1,7 +1,23 @@
 #!/bin/bash
 #服务业务发送对端口为129
-#接收回复成功的端口为1992
-#接收服务成功标示：success
+#安装流程：
+#1服务器A->CEMS-SERVIC-MONITOR
+#1服务器B->CEMS-SERVIC-MONITOR
+#1服务器C->CEMS-SERVIC-MONITOR
+#1服务器C--->SEND"70MONITOR-FINISHED"MESSAGE--->服务器B
+
+#2服务器B->CEMS-SERVICE-CONFIGURE
+#3服务器B->CEMS-SERVICE-ADDRESS
+#3服务器B--->SEND"CONFIGURE-ADDRESS-FINISHED"MESSAGE--->服务器A
+
+#4服务器A->CEMS-SERVICE-TOAUTH
+#5服务器A->CEMS-SERVICE-CEMS
+#5服务器A--->SEND"ALL-FINISHED"MESSAGE--->服务器B
+#5服务器A--->SEND"ALL-FINISHED"MESSAGE--->服务器C
+#5服务器A->其余服务
+
+#6服务器B->其余服务
+#7服务器C->其余服务
 
 IP_A="192.168.134.68"
 IP_C="192.168.134.69"
@@ -25,7 +41,7 @@ function Receive_Service()
 	#echo "answer is :${RECEIVE_SERVICE}"
 }
 
-function Send_Service_TWO()
+function Send_Service_Two()
 {
 	echo "CONFIGURE-ADDRESS-FINISHED" | /usr/bin/nc ${IP_A} ${PORT}
 }
@@ -36,41 +52,59 @@ function Receive_Judge()
 #	echo "answer is :${RECEIVE_JUDGE}"
 }
 
-
 function Service_Install()
 {
-        #cd ${PATH}CEMS-SERVICE-MONITOR/bin/
-        #./install.sh
-
-	echo "CEMS-SERVICE-MONITOR started..."
-
-	#cd ${PATH}CEMS-SERVICE-CONFIGURE/bin/
-        #./install.sh
-	echo "CEMS-SERVICE-CONFIGURE install finished!"
-	/bin/sleep 2
-	#cd ${PATH}CEMS-SERVICE-ADDRESS/bin/
-        #./install.sh
-	echo "CEMS-SERVICE-ADDRESS install finished!"
+	echo "******CEMS-SERVICE-MONITOR starting******"
+        cd ${PATH}CEMS-SERVICE-MONITOR/bin/
+        ./install.sh
+	echo "******CEMS-SERVICE-MONITOR finished!******"
 	/bin/sleep 1
-	# send to ip_A
-	
-        echo "【开始监听129端口,等待服务器A授权服务及CEMS平台安装完成】"
-	Send_Service_TWO
-	
+		
 	# keep listen to 129		
+        echo "【开始监听129端口,等待服务器C监控服务安装完成】"
+	Receive_Service
+	if [[ "${RECEIVE_SERVICE}" == "70MONITOR-FINISHED" ]]
+	then
+	{
+		echo "******CEMS-SERVICE-CONFIGURE started******"
+		cd ${PATH}CEMS-SERVICE-CONFIGURE/bin/
+        	./install.sh
+		/bin/sleep  1
+		echo "******CEMS-SERVICE-CONFIGURE install finished******"
+
+		echo "******CEMS-SERVICE-ADDRESS started******"
+		cd ${PATH}CEMS-SERVICE-ADDRESS/bin/
+        	./install.sh
+		echo "******CEMS-SERVICE-ADDRESS install finished******"
+		/bin/sleep 1
+
+		# send to ip_A
+        	echo "【发送地址服务安装完成信息至IP_A】"
+		Send_Service_Two
+		/bin/sleep  1
+	}
+	else
+	{
+		echo "请确定服务器C是否安装成功"
+		exit		
+	}
+	fi
+
+	# keep listen to 129		
+        echo "【开始监听129端口,等待服务器A授权服务及CEMS平台安装完成】"
 	Receive_Service
 	
 	# install other services
-	echo "【服务器A授权服务及CEMS平台安装完成】"
-	echo "【开始CEMS分布式B服务器其他安装】"
 	if [[ ${RECEIVE_SERVICE} == "ALL-FINISHED" ]]	
 	then
 	{
+		echo "【服务器A授权服务及CEMS平台安装完成】"
+		echo "【开始CEMS分布式B服务器其他安装】"
 		for service in 	${SERVICE_OTHER[@]}
 		do
 		{
-			#cd ${PATH}${service}/bin/
-                	#./install.sh
+			cd ${PATH}${service}/bin/
+                	./install.sh
 			 echo "${service} install finished Ok!"		
 			/bin/sleep 1
 		}
@@ -78,8 +112,8 @@ function Service_Install()
 		for tomcat in ${TOMCAT_OTHER[@]}
 		do
 		{
-			#cd ${PATH}${service}/bin/
-                	#./startup.sh
+			cd ${PATH}${service}/bin/
+                	./install.sh
                 	echo "${tomcat} started finished OK !"	
 			/bin/sleep 1
 		}

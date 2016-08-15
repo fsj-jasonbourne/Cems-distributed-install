@@ -1,7 +1,25 @@
 #!/bin/bash
 #服务业务发送对端口为129
-#接收回复成功的端口为1992
 #接收服务成功标示：success
+
+#安装流程：
+#1服务器A->CEMS-SERVIC-MONITOR 
+#1服务器B->CEMS-SERVIC-MONITOR 
+#1服务器C->CEMS-SERVIC-MONITOR 
+#1服务器C--->SEND"70MONITOR-FINISHED"MESSAGE--->服务器B
+
+#2服务器B->CEMS-SERVICE-CONFIGURE
+#3服务器B->CEMS-SERVICE-ADDRESS
+#3服务器B--->SEND"CONFIGURE-ADDRESS-FINISHED"MESSAGE--->服务器A
+
+#4服务器A->CEMS-SERVICE-TOAUTH
+#5服务器A->CEMS-SERVICE-CEMS
+#5服务器A--->SEND"ALL-FINISHED"MESSAGE--->服务器B
+#5服务器A--->SEND"ALL-FINISHED"MESSAGE--->服务器C
+#5服务器A->其余服务
+
+#6服务器B->其余服务
+#7服务器C->其余服务
 
 IP_A="192.168.134.68"
 IP_B="192.168.134.69"
@@ -40,8 +58,8 @@ function Service_Install_Other()
 	for service in ${SERVICE_OTHER[@]}
 	do
 	{
-		#cd ${PATH}${service}/bin/
-                #./install.sh	 
+		cd ${PATH}${service}/bin/
+                ./install.sh	 
 		echo "${service} installed!!!"
 		/bin/sleep 1
 	}
@@ -53,8 +71,8 @@ function Tomcat_Install_Other()
 	for tomcat in ${TOMCAT_OTHER[@]}
 	do
 	{
-		#cd ${PATH}${tomcat}/bin/
-                #./startup.sh	 
+		cd ${PATH}${tomcat}/bin/
+                ./install.sh	 
 		echo "${tomcat} installed!!!"
 		/bin/sleep 1
 	}
@@ -63,9 +81,9 @@ function Tomcat_Install_Other()
 
 function Service_Install()
 {
-#	cd ${PATH}CEMS-SERVICE-MONITOR/bin/
-#	./install.sh
-
+	# STEP 1
+	cd ${PATH}CEMS-SERVICE-MONITOR/bin/
+	./install.sh
 	echo "CEMS-SERVICE-MONITOR started..."
 	echo "【开始监听129端口,等待服务器B安装完成】"
 	# listen to 129
@@ -74,12 +92,16 @@ function Service_Install()
 	if [[ ${RECEIVE_SERVICE} == "CONFIGURE-ADDRESS-FINISHED" ]]
 	then
 	{
-		#cd ${PATH}CEMS-SERVICE-TOAUTH/bin/
-                #./install.sh		
+		
+		echo "【结束CEMS分布式B服务器安装】"
+		# STEP 2
+		cd ${PATH}CEMS-SERVICE-TOAUTH/bin/
+                ./install.sh		
 		echo "CEMS-SERVICE-TOAUTH install finished Ok!"
 		/bin/sleep 1
-		#cd ${PATH}CEMS/bin/
-                #./startup.sh
+		# STEP 3
+		cd ${PATH}CEMS/bin/
+                ./install.sh
 		echo "CEMS TOMCAT started finished OK !"
 	}
 	else
@@ -88,12 +110,6 @@ function Service_Install()
 		exit 0
 	}	
 	fi
-	# send install finished to IP_B and IP_C
-	Send_Service_Five
-	echo "【其余服务安装开始,顺序随意】"
-	Service_Install_Other
-	
-	Tomcat_Install_Other
 }
 
 function Main()
@@ -101,9 +117,17 @@ function Main()
 	echo "【开始CEMS分布式A服务器安装】"
 	Service_Install
 	echo "【结束CEMS分布式A服务器安装】"
+	# send install finished to IP_B and IP_C
 	echo "【告知服务器B及服务器C】"
+	Send_Service_Five
 	echo "【告知服务器B及服务器C完成】"
-	echo "【结束CEMS分布式B服务器安装】"
+	echo "【其余服务安装开始,顺序随意】"
+	echo "【服务器A中CEMS服务安装开始】"
+	Service_Install_Other
+	echo "【服务器B中TOMCAT服务安装开始】"
+	Tomcat_Install_Other
+
 }
+
 
 Main
