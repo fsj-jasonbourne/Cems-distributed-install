@@ -1,0 +1,99 @@
+#!/bin/bash
+#服务业务发送对端口为129
+#接收回复成功的端口为1992
+#接收服务成功标示：success
+
+IP_A="192.168.134.68"
+IP_C="192.168.134.69"
+IP_B="192.168.134.70"
+
+PORT="129"
+PATH="/usr/local/service/"
+
+SERVICE_OTHER=(CEMS-SERVICE-CACHE
+               CEMS-C-UDP
+               CEMS-sERVICE-SUPGRADE
+               CEMS-SERVICE-PATCH
+	       CEMS-SERVICE-CUPGRADE
+	       CEMS-SERVICE-SCAN)
+
+TOMCAT_OTHER=(CEMS-SERVICE-UDISK)
+
+function Receive_Service()
+{
+	RECEIVE_SERVICE=`/usr/bin/nc -l ${PORT}`
+	#echo "answer is :${RECEIVE_SERVICE}"
+}
+
+function Send_Service_TWO()
+{
+	echo "CONFIGURE-ADDRESS-FINISHED" | /usr/bin/nc ${IP_A} ${PORT}
+}
+
+function Receive_Judge()
+{
+	RECEIVE_JUDGE=`/usr/bin/nc -l 1992`
+#	echo "answer is :${RECEIVE_JUDGE}"
+}
+
+
+function Service_Install()
+{
+        #cd ${PATH}CEMS-SERVICE-MONITOR/bin/
+        #./install.sh
+
+	echo "CEMS-SERVICE-MONITOR started..."
+
+	#cd ${PATH}CEMS-SERVICE-CONFIGURE/bin/
+        #./install.sh
+	echo "CEMS-SERVICE-CONFIGURE install finished!"
+	/bin/sleep 2
+	#cd ${PATH}CEMS-SERVICE-ADDRESS/bin/
+        #./install.sh
+	echo "CEMS-SERVICE-ADDRESS install finished!"
+	/bin/sleep 1
+	# send to ip_A
+	
+        echo "【开始监听129端口,等待服务器A授权服务及CEMS平台安装完成】"
+	Send_Service_TWO
+	
+	# keep listen to 129		
+	Receive_Service
+	
+	# install other services
+	echo "【服务器A授权服务及CEMS平台安装完成】"
+	echo "【开始CEMS分布式B服务器其他安装】"
+	if [[ ${RECEIVE_SERVICE} == "ALL-FINISHED" ]]	
+	then
+	{
+		for service in 	${SERVICE_OTHER[@]}
+		do
+		{
+			#cd ${PATH}${service}/bin/
+                	#./install.sh
+			 echo "${service} install finished Ok!"		
+			/bin/sleep 1
+		}
+		done
+		for tomcat in ${TOMCAT_OTHER[@]}
+		do
+		{
+			#cd ${PATH}${service}/bin/
+                	#./startup.sh
+                	echo "${tomcat} started finished OK !"	
+			/bin/sleep 1
+		}
+		done
+	}
+	fi
+}
+
+
+function Main()
+{
+	echo "【开始CEMS分布式B服务器安装】"
+	Service_Install
+        echo "【结束CEMS分布式B服务器安装】"
+}
+
+Main

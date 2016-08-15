@@ -1,12 +1,15 @@
 #!/bin/bash
+# CEMS服务     --->7个
+# CEMS-SERVICE --->5个
+# CEMS-TOMCAT  --->2个
 SEVEN_ZERO_SERVICE=(CEMS-SERVICE-MONITOR
-		            CEMS-SERVICE-ALARM
-		            CEMS-SERVICE-DATAPROCESS
-		            CEMS-SERVICE-PTP
-   		   	        CEMS-SERVICE-SUPGRADE)
+		    CEMS-SERVICE-ALARM
+		    CEMS-SERVICE-DATAPROCESS
+		    CEMS-SERVICE-PTP
+   		    CEMS-SERVICE-SUPGRADE)
 
 SEVEN_ZERO_TOMCAT=(CEMS-C-TCP
-		           CEMSUP)
+		   CEMSUP)
 
 CONFIG_FILE='config.properties'
 FASTDFS_FILE='fastdfs.properties'

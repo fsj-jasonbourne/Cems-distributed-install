@@ -1,13 +1,16 @@
 #!/bin/bash
+# CEMS服务     --->10个
+# CEMS-SERVICE --->9个
+# CEMS-TOMCAT  --->1个
 SIX_NINE_SERVICE=(CEMS-SERVICE-MONITOR
-		          CEMS-SERVICE-CONFIGURE
-		          CEMS-SERVICE-ADDRESS
-		   		  CEMS-SERVICE-CUPGRADE
-   		          CEMS-SERVICE-PATCH
-		  	 	  CEMS-SERVICE-SCAN
-		   		  CEMS-SERVICE-SUPGRADE
-		      	  CEMS-SERVICE-CACHE
-		    	  CEMS-C-UDP)
+		  CEMS-SERVICE-CONFIGURE
+		  CEMS-SERVICE-ADDRESS
+		  CEMS-SERVICE-CUPGRADE
+   		  CEMS-SERVICE-PATCH
+		  CEMS-SERVICE-SCAN
+		  CEMS-SERVICE-SUPGRADE
+		  CEMS-SERVICE-CACHE
+		  CEMS-C-UDP)
 
 SIX_NINE_TOMCAT=(CEMS-SERVICE-UDISK)
 
@@ -72,6 +75,7 @@ function FtpProperties()
 {
 	\sed -i "/ftp.ip=.*/s/=.*/=${FTP_IP}/g" ${FTP_FILE}
 }
+
 function PolicyXml()
 {
         \sed -i "s/loadbalance:\/\/.*.:3306/loadbalance:\/\/${SERVER_IP}:3306/g" ${POLICY_FILE}
