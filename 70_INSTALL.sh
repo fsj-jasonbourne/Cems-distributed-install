@@ -98,7 +98,7 @@ function PolicyXml()
 
 function ConfigFiles()
 {
-	for service in ${SIX_NINE_SERVICE[@]}
+	for service in ${SEVEN_ZERO_SERVICE[@]}
 	do
 	{
 		echo ${service}
@@ -154,7 +154,7 @@ function ConfigFiles()
 	}
 	done 
 
-	for service in ${SIX_NINE_TOMCAT[@]}
+	for service in ${SEVEN_ZERO_TOMCAT[@]}
 	do
 	{
 		echo ${service}
@@ -227,14 +227,14 @@ function ConfigService()
 	fi
 	# copy CEMS-SERVERS to /usr/local/service
 	echo "start to copy CEMS-SERVICES files......"
-	for service in ${SIX_NINE_SERVICE[@]}
+	for service in ${SEVEN_ZERO_SERVICE[@]}
 	do
 	{
 		\cp  -rpf ${service} ${PATH_INSTALL}
 	}
 	done
 	echo "start to copy CEMS-TOMCAT files......"
-	for service in ${SIX_NINE_TOMCAT[@]}
+	for service in ${SEVEN_ZERO_TOMCAT[@]}
 	do
 	{
 		\cp  -rpf ${service} ${PATH_INSTALL}
