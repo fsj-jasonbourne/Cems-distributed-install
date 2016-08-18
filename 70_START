@@ -24,9 +24,10 @@ IP_B="192.168.134.69"
 IP_C="192.168.134.70"
 
 PORT="129"
+path_cems="/usr/local/service/"
 
 SERVICE_OTHER=(CEMS-SERVICE-PTP
-               CEMS-sERVICE-ALARM
+               CEMS-SERVICE-ALARM
                CEMS-SERVICE-DATAPROCESS
                CEMS-SERVICE-SUPGRADE)
 
@@ -52,7 +53,8 @@ function Receive_Judge()
 
 function Service_Install()
 {
-        cd ${PATH}CEMS-SERVICE-MONITOR/bin/
+        cd ${path_cems}CEMS-SERVICE-MONITOR/bin/
+	/bin/chmod +x install.sh
        ./install.sh
         echo "CEMS-SERVICE-MONITOR started..."
 
@@ -68,7 +70,8 @@ function Service_Install()
                 for service in  ${SERVICE_OTHER[@]}
                 do
                 {
-                        cd ${PATH}${service}/bin/
+                        cd ${path_cems}${service}/bin/
+			/bin/chmod +x install.sh
                         ./install.sh
                          echo "${service} install finished Ok!"
 			/bin/sleep 1
@@ -77,8 +80,9 @@ function Service_Install()
                 for tomcat in ${TOMCAT_OTHER[@]}
                 do
                 {
-                        cd ${PATH}${service}/bin/
-                        /startup.sh
+                        cd ${path_cems}${tomcat}/bin/
+			/bin/chmod +x install.sh
+                        ./install.sh
                         echo "${tomcat} started finished OK !"
 			/bin/sleep 1
                 }

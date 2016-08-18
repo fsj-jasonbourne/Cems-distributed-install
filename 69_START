@@ -24,11 +24,11 @@ IP_C="192.168.134.69"
 IP_B="192.168.134.70"
 
 PORT="129"
-PATH="/usr/local/service/"
+path_cems="/usr/local/service/"
 
 SERVICE_OTHER=(CEMS-SERVICE-CACHE
                CEMS-C-UDP
-               CEMS-sERVICE-SUPGRADE
+               CEMS-SERVICE-SUPGRADE
                CEMS-SERVICE-PATCH
 	       CEMS-SERVICE-CUPGRADE
 	       CEMS-SERVICE-SCAN)
@@ -55,10 +55,11 @@ function Receive_Judge()
 function Service_Install()
 {
 	echo "******CEMS-SERVICE-MONITOR starting******"
-        cd ${PATH}CEMS-SERVICE-MONITOR/bin/
+        cd ${path_cems}CEMS-SERVICE-MONITOR/bin/
+	/bin/chmod +x install.sh
         ./install.sh
 	echo "******CEMS-SERVICE-MONITOR finished!******"
-	/bin/sleep 1
+	/bin/sleep 2
 		
 	# keep listen to 129		
         echo "【开始监听129端口,等待服务器C监控服务安装完成】"
@@ -67,21 +68,23 @@ function Service_Install()
 	then
 	{
 		echo "******CEMS-SERVICE-CONFIGURE started******"
-		cd ${PATH}CEMS-SERVICE-CONFIGURE/bin/
+		cd ${path_cems}CEMS-SERVICE-CONFIGURE/bin/
+		/bin/chmod +x install.sh
         	./install.sh
-		/bin/sleep  1
+		/bin/sleep  3
 		echo "******CEMS-SERVICE-CONFIGURE install finished******"
 
 		echo "******CEMS-SERVICE-ADDRESS started******"
-		cd ${PATH}CEMS-SERVICE-ADDRESS/bin/
+		cd ${path_cems}CEMS-SERVICE-ADDRESS/bin/
+		/bin/chmod +x install.sh
         	./install.sh
 		echo "******CEMS-SERVICE-ADDRESS install finished******"
-		/bin/sleep 1
+		/bin/sleep 3
 
 		# send to ip_A
         	echo "【发送地址服务安装完成信息至IP_A】"
 		Send_Service_Two
-		/bin/sleep  1
+		/bin/sleep  3
 	}
 	else
 	{
@@ -103,7 +106,8 @@ function Service_Install()
 		for service in 	${SERVICE_OTHER[@]}
 		do
 		{
-			cd ${PATH}${service}/bin/
+			cd ${path_cems}${service}/bin/
+			/bin/chmod +x install.sh
                 	./install.sh
 			 echo "${service} install finished Ok!"		
 			/bin/sleep 1
@@ -112,7 +116,8 @@ function Service_Install()
 		for tomcat in ${TOMCAT_OTHER[@]}
 		do
 		{
-			cd ${PATH}${service}/bin/
+			cd ${path_cems}${tomcat}/bin/
+			/bin/chmod +x install.sh
                 	./install.sh
                 	echo "${tomcat} started finished OK !"	
 			/bin/sleep 1

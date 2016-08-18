@@ -26,11 +26,11 @@ IP_B="192.168.134.69"
 IP_C="192.168.134.70"
 
 PORT="129"
-PATH="/usr/local/service/"
+path_cems="/usr/local/service/"
 
 SERVICE_OTHER=(CEMS-SERVICE-POLICY
 	       CEMS-SERVICE-ONLINE
-	       CEMS-sERVICE-BLOCK
+	       CEMS-SERVICE-BLOCK
 	       CEMS-SERVICE-SUPGRADE)
 
 TOMCAT_OTHER=(CEMS-SERVICE-UPDOWNLOAD)
@@ -58,10 +58,11 @@ function Service_Install_Other()
 	for service in ${SERVICE_OTHER[@]}
 	do
 	{
-		cd ${PATH}${service}/bin/
+		cd ${path_cems}${service}/bin/
+		/bin/chmod +x install.sh
                 ./install.sh	 
 		echo "${service} installed!!!"
-		/bin/sleep 1
+		/bin/sleep 2
 	}
 	done
 }
@@ -71,7 +72,8 @@ function Tomcat_Install_Other()
 	for tomcat in ${TOMCAT_OTHER[@]}
 	do
 	{
-		cd ${PATH}${tomcat}/bin/
+		cd ${path_cems}${tomcat}/bin/
+		/bin/chmod +x *
                 ./install.sh	 
 		echo "${tomcat} installed!!!"
 		/bin/sleep 1
@@ -82,7 +84,8 @@ function Tomcat_Install_Other()
 function Service_Install()
 {
 	# STEP 1
-	cd ${PATH}CEMS-SERVICE-MONITOR/bin/
+	cd ${path_cems}CEMS-SERVICE-MONITOR/bin/
+	\/bin/chmod +x *
 	./install.sh
 	echo "CEMS-SERVICE-MONITOR started..."
 	echo "【开始监听129端口,等待服务器B安装完成】"
@@ -95,13 +98,18 @@ function Service_Install()
 		
 		echo "【结束CEMS分布式B服务器安装】"
 		# STEP 2
-		cd ${PATH}CEMS-SERVICE-TOAUTH/bin/
+		cd ${path_cems}CEMS-SERVICE-TOAUTH/bin/
+		/bin/chmod +x *
                 ./install.sh		
+		/bin/sleep 3	
+
 		echo "CEMS-SERVICE-TOAUTH install finished Ok!"
-		/bin/sleep 1
+		/bin/sleep 3
 		# STEP 3
-		cd ${PATH}CEMS/bin/
+		cd ${path_cems}CEMS/bin/
+		/bin/chmod +x *
                 ./install.sh
+		/bin/sleep 3	
 		echo "CEMS TOMCAT started finished OK !"
 	}
 	else
@@ -126,6 +134,7 @@ function Main()
 	Service_Install_Other
 	echo "【服务器B中TOMCAT服务安装开始】"
 	Tomcat_Install_Other
+	echo "【服务器A安装结束】"	
 
 }
 
