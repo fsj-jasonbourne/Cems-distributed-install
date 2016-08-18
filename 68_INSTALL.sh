@@ -37,6 +37,9 @@ function InputAddress()
 	read FTP_IP
 	echo "<--Please input redis.IP-->"
 	read REDIS_IP
+	echo "<--Please input CEMS.IP-->"
+	read REDIS_IP
+
 }
 
 function ConfigProperties()
@@ -49,7 +52,6 @@ function ConfigProperties()
 
 function FastdfsProperties()
 {
-	
 	#\sed -i "s/tracker_server=.*.:22122/tracker_server=${FASTDFS_IP}:22122/g" ${FASTDFS_FILE}
 	# tracker_server = 192.168.134.68:22122	
 	\sed -i "s/=.*.:22122/=${FASTDFS_IP}:22122/g" ${FASTDFS_FILE}
@@ -59,10 +61,9 @@ function FastdfsProperties()
 
 function JdbcProperties()
 {
-	
-	sed -i "s/mysql:\/\/.*.:3306/mysql:\/\/${JDBC_IP}:3306/g" ${JDBC_FILE}
+	\sed -i "s/mysql:\/\/.*.:3306/mysql:\/\/${JDBC_IP}:3306/g" ${JDBC_FILE}
 	# for mysql://:3306	
-	sed -i "s/mysql:\/\/:3306/mysql:\/\/${JDBC_IP}:3306/g" ${JDBC_FILE}
+	\sed -i "s/mysql:\/\/:3306/mysql:\/\/${JDBC_IP}:3306/g" ${JDBC_FILE}
 }
 
 function RedisProperties()
@@ -79,23 +80,23 @@ function PolicyXml()
         \sed -i "s/loadbalance:\/\/.*.:3306/loadbalance:\/\/${SERVER_IP}:3306/g" ${POLICY_FILE}
 	\sed -i "s/mysql:\/\/.*.:3306/mysql:\/\/${SERVER_IP}:3306/g" ${POLICY_FILE}
 	# 11s---jdbc ip
-	sed -i "11s/<ip>.*.<\/ip>/<ip>${JDBC_IP}<\/ip>/g" ${POLICY_FILE}
+	\sed -i "11s/<ip>.*.<\/ip>/<ip>${JDBC_IP}<\/ip>/g" ${POLICY_FILE}
 	# 23s---jdbc ip
-	sed -i "23s/<ip>.*.<\/ip>/<ip>${JDBC_IP}<\/ip>/g" ${POLICY_FILE}
+	\sed -i "23s/<ip>.*.<\/ip>/<ip>${JDBC_IP}<\/ip>/g" ${POLICY_FILE}
 	# 32s---redis ip
-	sed -i "32s/<ip>.*.<\/ip>/<ip>${REDIS_IP}<\/ip>/g" ${POLICY_FILE}
+	\sed -i "32s/<ip>.*.<\/ip>/<ip>${REDIS_IP}<\/ip>/g" ${POLICY_FILE}
 	# 38s---cache ip ---same to redis
-	sed -i "38s/<ip>.*.<\/ip>/<ip>${REDIS_IP}<\/ip>/g" ${POLICY_FILE}
+	\sed -i "38s/<ip>.*.<\/ip>/<ip>${REDIS_IP}<\/ip>/g" ${POLICY_FILE}
 	# 43s---ftp ip 
-	sed -i "43s/<ip>.*.<\/ip>/<ip>${FTP_IP}<\/ip>/g" ${POLICY_FILE}
+	\sed -i "43s/<ip>.*.<\/ip>/<ip>${FTP_IP}<\/ip>/g" ${POLICY_FILE}
 	# 52s---tracker ip
-	sed -i "s/<tracker_server>.*.:22122/<tracker_server>${REDIS_IP}:22122/g" ${POLICY_FILE}
-	# 59s---CEMS ip 
-	sed -i "59s/<ip>.*.<\/ip>/<ip>${SERVICE_IP}<\/ip>/g" ${POLICY_FILE}
+	\sed -i "s/<tracker_server>.*.:22122/<tracker_server>${REDIS_IP}:22122/g" ${POLICY_FILE}
+	# 59s---CEMS ip ---->changedby jasonbourne<fushijia@vrvmail.com.cn>
+	\sed -i "59s/<ip>.*.<\/ip>/<ip>${REDIS_IP}<\/ip>/g" ${POLICY_FILE}
 	# 65s---CEMSUP ip 
-	sed -i "65s/<ip>.*.<\/ip>/<ip>${FTP_IP}<\/ip>/g" ${POLICY_FILE}
+	\sed -i "65s/<ip>.*.<\/ip>/<ip>${FTP_IP}<\/ip>/g" ${POLICY_FILE}
 	# 70s---CONFIGURE ip---same to redis	
-	sed -i "70s/<ip>.*.<\/ip>/<ip>${REDIS_IP}<\/ip>/g" ${POLICY_FILE}
+	\sed -i "70s/<ip>.*.<\/ip>/<ip>${REDIS_IP}<\/ip>/g" ${POLICY_FILE}
 }
 
 function ConfigFiles()

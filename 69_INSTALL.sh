@@ -38,6 +38,9 @@ function InputAddress()
 	read FTP_IP
 	echo "<--Please input redis.IP-->"
 	read REDIS_IP
+	echo "<--Please input CEMS.IP-->"
+	read CEMS_IP
+
 }
 
 function ConfigProperties()
@@ -93,7 +96,7 @@ function PolicyXml()
 	# 52s---tracker ip
 	sed -i "s/<tracker_server>.*.:22122/<tracker_server>${REDIS_IP}:22122/g" ${POLICY_FILE}
 	# 59s---CEMS ip 
-	sed -i "59s/<ip>.*.<\/ip>/<ip>${SERVICE_IP}<\/ip>/g" ${POLICY_FILE}
+	sed -i "59s/<ip>.*.<\/ip>/<ip>${CEMS_IP}<\/ip>/g" ${POLICY_FILE}
 	# 65s---CEMSUP ip 
 	sed -i "65s/<ip>.*.<\/ip>/<ip>${FTP_IP}<\/ip>/g" ${POLICY_FILE}
 	# 70s---CONFIGURE ip---same to redis	
